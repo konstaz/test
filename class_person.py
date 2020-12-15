@@ -1,3 +1,4 @@
+import os
 from abc import ABC
 
 from openpyxl import load_workbook
@@ -109,10 +110,8 @@ class Unemployed(Person):
 
 
 class Worker:
-    _instance = []
 
     def __init__(self, name: str, last_name: str, phone, activity):  # , company: str, salary: float):
-        self._instance.append(self)
         self._name = name
         self._last_name = last_name
         self._phone = phone
@@ -137,6 +136,8 @@ class Worker:
         # else:
         #     raise TypeError('Phone number should contain only digits')
 
+    def __str__(self):
+        return f'Name={self._name}, Lastname={self._last_name}, phone={self._phone}, activity={self._activity}'
 
     def taxes(self):
         return self._salary * 0.2
@@ -251,11 +252,14 @@ class Programmer(Worker):
 
 class PeopleProfession:
 
-    # self.wb = load_workbook('profs.xlsx')
-    # self.data = list(wb.active.values)[1:]
+    def __init__(self, file):
 
-    def __init__(self):
-        self.wb = load_workbook('profs.xlsx')
+        self._datafile = file
+
+        if not os.path.isfile(file):
+            raise FileNotFoundError('file does not exist')
+
+        self.wb = load_workbook(self._datafile)
         self.data = list(self.wb.active.values)[1:]
 
 
@@ -263,14 +267,21 @@ class PeopleProfession:
         return [Worker(i[0], i[1], i[2], i[3]) for i in self.data]
 
 
+    def print_data(self):
+        for i in self.data:
+            worker = Worker(name=i[0], last_name=i[1], phone=i[2], activity=i[3])
+            print(worker)
 
 
 
 if __name__ == "__main__":
-    # x = Programmer('alex', 'schulman', 888, 'top Perses', 30000, 'AlexDarkStalker2001')
-    # Programmer.programmer()
-    x = PeopleProfession()
+    x = PeopleProfession('profs.xlsx')
+
     print(x.list_prof())
+    print(x.print_data())
+
+    # z = PeopleProfession('prodsafsadffs.xlsx')
+
     # a = Programmer.developer()('alex', 'schulman', 888, 'top Perses', 30000, 'AlexDarkStalker2001')
     # b = Programmer.tester()('alex', 'schulman', 888, 'top Perses', 30000, 'AlexDarkStalker2001')
     # c = Programmer('alex', 'schulman', 888, 'top Perses', 30000, 'AlexDarkStalker2001')
@@ -278,6 +289,7 @@ if __name__ == "__main__":
     # print(b.prof)
     # print(c.prof)
 
+    # x = Programmer('alex', 'schulman', 888, 'top Perses', 30000, 'AlexDarkStalker2001')
+
+    # Programmer.programmer()
     # print(ProfRepresentation())
-
-
